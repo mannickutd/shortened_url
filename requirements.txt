@@ -1,0 +1,9 @@
+aiohttp==3.3.2
+Cython==0.28.5
+uvloop==0.11.2
+gino==0.7.5
+psycopg2==2.7.3.2
+alembic==0.9.7
+gunicorn==19.9.0
+json-logging-py==0.2
+pystrainer==1.3.1
