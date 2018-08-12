@@ -24,7 +24,7 @@ function display_result {
 pip install -r requirements_for_test.txt
 
 # Create Postgres databases
-createdb shortened_url
+createdb shortenedurl
 
 # Upgrade databases
 source environment.sh

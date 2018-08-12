@@ -35,7 +35,9 @@ def _validate_url(url):
         # given in the requirement www.example.com.
         # We could prepend http:// to the beginning of the url or in the future look
         # to exclude the clause from the regex expression
-        match = re.match(REGEX, 'http://{0}'.format(url))
+        if url.startswith('www'):
+            url = "http://{0}".format(url)
+        match = re.match(REGEX, url)
         if not match:
             # More work could be done here using urllib.parse.urlparse to give users
             # specific errors how the url is invalid.
@@ -45,17 +47,18 @@ def _validate_url(url):
                 'url': 'Invalid url passed should conform to the regex {0}'.format(URL_REGEX)})
     # Another approach would be to actually test the url provided and validate the response.
     # This approach would also need error handling on why the url is invalid.
+    return url
 
 
 async def url_map_post(request):
     try:
         data = await request.json()
-        url = data['url']
+        url = str(data['url'])
     except Exception as e:
         return web.json_response({'status': 'error',
-                                  'message': {'url': "invalid or missing parameter"}})
+                                  'message': {'url': "invalid or missing parameter, invalid string value"}})
     try:
-        _validate_url(url)
+        url = _validate_url(url)
     except InvalidUrlException as e:
         return web.json_response({'status': 'error',
                                   'message': e.json_msg})
@@ -71,8 +74,9 @@ async def url_map_get(request):
     if pids:
         url_map_pid = pids[0]
     else:
-        raise web.HTTPNotFound() 
+        raise web.HTTPNotFound()
     url_map = await get_url_map(url_map_pid)
     if not url_map:
         raise web.HTTPNotFound()
+
     raise web.HTTPFound(url_map.original_url)
