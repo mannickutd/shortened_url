@@ -67,7 +67,11 @@ async def url_map_post(request):
 
 
 async def url_map_get(request):
-    url_map_pid = hashids_client.decode(request.match_info.get('short_url'))[0]
+    pids = hashids_client.decode(request.match_info.get('short_url'))
+    if pids:
+        url_map_pid = pids[0]
+    else:
+        raise web.HTTPNotFound() 
     url_map = await get_url_map(url_map_pid)
     if not url_map:
         raise web.HTTPNotFound()
